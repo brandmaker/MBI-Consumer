@@ -1,0 +1,55 @@
+##
+#
+# Application settings for Demo Web Hook 
+#
+# (c) BrandMaker GmbH, March 2020
+#
+##
+ 
+spring:
+     application:
+          name: BrandMaker Media Pool Web Hook Example
+          
+          system:
+          
+              # BM System ID we accept requests from
+              systemId: 123-456-789
+              
+              # BM customer ID we accept requests from
+              customerId: aaa-bbb-ccc
+              
+              # BM public key to validate request signatures
+              publickey: somevalue
+              
+              # The channel or the channels, this webhook is responsible for. We take the standard here
+              # please refer to the documentation of publication channels in the media pool manual!
+              channels: PUBLIC_LINKS,SHARE
+              
+              # cleartext uid and pwd to login via Basic Auth to Media Pool API
+              # as soon as the CAS is available, this is changed to an oAuth2 access Token and refresh Token !!
+              user: axel.amthor
+              password: rnmthr1.
+              
+              
+              # base path to store the files in. "./" means current dir where the app is started. 
+              # Path must contain a trailing slash ("/"). Path sep is always forward slash ("/")
+              basepath: ./assets/
+          
+     server:
+          port: 8080
+          # we leave that as it is
+          
+          address: 0.0.0.0
+          # listen on all interfaces
+          # if this is a local dev machine, and you have a port forwarding enabled to that, ensure the Win10/Mac FW isn't blocking that!
+          # if your port is different from 80, please contact BM support to open that port in the FW for outgoing connections on your instance as well!
+          
+     active-mq:
+          queue-name: mediapool.queue
+          #broker-url: tcp://localhost:61616 # this requires ActiveMQ to be up and running!
+          broker-url: vm://embedded-broker?broker.persistent=true # internal broker, uncomment if no ActiveMQ or any other compatible broker is installed
+          #vm://localhost:61616?broker.useShutdownHook=false&broker.brokerName=webcache
+springdoc:
+     swagger-ui:
+          path: /api-docs.html
+
