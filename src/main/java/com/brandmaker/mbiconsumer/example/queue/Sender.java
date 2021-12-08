@@ -18,7 +18,7 @@ public class Sender {
 
 	public void send(Object message) {
 
-		LOGGER.debug("sending new message: '{}' to " + queueName, message.toString());
+		LOGGER.debug("sending a new message: '{}' to " + queueName, message.toString());
 		
 		jmsTemplate.convertAndSend(queueName, message);
 
