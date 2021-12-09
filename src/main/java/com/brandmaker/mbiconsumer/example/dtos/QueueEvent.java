@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 /**
+ * 
+ * Event Structure picked fromthe internal JMS queue
+ * 
  * @author axel.amthor
  *
  */
