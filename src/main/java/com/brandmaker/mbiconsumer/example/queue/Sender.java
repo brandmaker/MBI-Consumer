@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
+ * 
+ * Encapsulates the JMS message sending 
+ * 
  * @author axel.amthor
  *
  */
