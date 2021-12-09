@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 
+/**
+ * @author axel.amthor
+ *
+ */
 public class Sender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
