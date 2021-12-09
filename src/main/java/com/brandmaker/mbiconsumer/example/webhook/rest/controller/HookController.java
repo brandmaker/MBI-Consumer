@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity;
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -38,6 +40,6 @@ public interface HookController {
 			consumes="application/json", 
 			produces="application/json")
 	@ResponseStatus(value=HttpStatus.ACCEPTED, reason="Request accepted")
-	Response post(@RequestBody HookRequestBody requestBody, HttpServletResponse httpResponse);
+	Response post(@RequestBody WebhookTargetPayloadHttpEntity requestBody, HttpServletResponse httpResponse);
 
 }

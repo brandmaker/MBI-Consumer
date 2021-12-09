@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import com.brandmaker.mbiconsumer.example.webhook.rest.controller.HookController;
 
@@ -22,11 +23,17 @@ import com.brandmaker.mbiconsumer.example.webhook.rest.controller.HookController
  * @author axel.amthor
  *
  */
+@EnableWebSecurity
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 
 // our controller is in a sibling package, give Spring some hints where to find it
 @ComponentScan(basePackageClasses = HookController.class, basePackages = { 
-		"com.brandmaker.mbiconsumer.example.webhook.rest" })
+		"com.brandmaker.mbiconsumer.example.queue",
+		"com.brandmaker.mbiconsumer.example.webhook",
+		"com.brandmaker.mbiconsumer.example.rest",
+		"com.brandmaker.mbiconsumer.example.dtos",
+		"com.brandmaker.mbiconsumer.example",
+		})
 public class Application extends SpringBootServletInitializer {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Application.class);

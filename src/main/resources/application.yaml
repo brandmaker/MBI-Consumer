@@ -1,14 +1,20 @@
 ##
 #
-# Application settings for Demo Web Hook 
+# Application settings for MBI Demo Consumer
 #
-# (c) BrandMaker GmbH, March 2020
+# (c) BrandMaker GmbH, December 2021
 #
 ##
  
 spring:
+     main:
+         allow-circular-references: true     
+     mvc:
+        pathmatch:
+           matching-strategy: ant_path_matcher
+
      application:
-          name: BrandMaker Media Pool Web Hook Example
+          name: BrandMaker MBI Demo Consumer
           
           system:
           
@@ -25,15 +31,9 @@ spring:
               # please refer to the documentation of publication channels in the media pool manual!
               channels: PUBLIC_LINKS,SHARE
               
-              # cleartext uid and pwd to login via Basic Auth to Media Pool API
-              # as soon as the CAS is available, this is changed to an oAuth2 access Token and refresh Token !!
-              user: axel.amthor
-              password: rnmthr1.
-              
-              
               # base path to store the files in. "./" means current dir where the app is started. 
               # Path must contain a trailing slash ("/"). Path sep is always forward slash ("/")
-              basepath: ./assets/
+              basepath: ./events/
           
      server:
           port: 8080
@@ -45,7 +45,7 @@ spring:
           # if your port is different from 80, please contact BM support to open that port in the FW for outgoing connections on your instance as well!
           
      active-mq:
-          queue-name: mediapool.queue
+          queue-name: mbievents.queue
           #broker-url: tcp://localhost:61616 # this requires ActiveMQ to be up and running!
           broker-url: vm://embedded-broker?broker.persistent=true # internal broker, uncomment if no ActiveMQ or any other compatible broker is installed
           #vm://localhost:61616?broker.useShutdownHook=false&broker.brokerName=webcache
