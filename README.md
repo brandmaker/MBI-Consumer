@@ -5,7 +5,7 @@
 
 ## Project state
 
-[![Build Status](https://travis-ci.org/brandmaker/MBI-Consumer.svg?branch=master)](https://www.travis-ci.com/brandmaker/MBI-Consumer)
+[![Build Status](https://travis-ci.org/brandmaker/MBI-Consumer.svg?branch=master)](https://app.travis-ci.com/github/brandmaker/MBI-Consumer)
 
 
 # Further Information
