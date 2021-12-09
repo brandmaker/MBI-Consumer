@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 
 /**
  * 
- * Event Structure picked fromthe internal JMS queue
+ * Event Structure picked from the internal JMS queue
  * 
  * @author axel.amthor
  *
