@@ -1,4 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/brandmaker/MBI-Consumer/master/BrandMaker_Logo_on_light_bg.png" alt="BrandMaker" width="30%" height="30%">
+<img align="right" src="https://github.com/brandmaker/MBI-Consumer/blob/f7a4fc69e2bea28d909215df626b55e020fbaffa/BrandMaker_Logo_on_light_bg.png" alt="BrandMaker" width="30%" height="30%">
 
 
 # BrandMaker MBI Consumer Example
