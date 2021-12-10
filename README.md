@@ -5,8 +5,7 @@
 
 ## Project state
 
-[![Build Status](https://travis-ci.org/brandmaker/MBI-Consumer.svg?branch=master)](https://app.travis-ci.com/github/brandmaker/MBI-Consumer)
-
+[![Java CI with Maven](https://github.com/brandmaker/MBI-Consumer/actions/workflows/maven.yml/badge.svg)](https://github.com/brandmaker/MBI-Consumer/actions/workflows/maven.yml)
 
 # Further Information
 
