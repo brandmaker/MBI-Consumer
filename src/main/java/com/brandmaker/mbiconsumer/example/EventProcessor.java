@@ -1,9 +1,11 @@
 package com.brandmaker.mbiconsumer.example;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.brandmaker.mbiconsumer.example.dtos.QueueEvent;
+import com.brandmaker.mbiconsumer.example.utils.FileManagerService;
 
 /**
  * @author axel.amthor
@@ -31,10 +33,15 @@ public class EventProcessor {
 		}
 	}
 	
+	@Autowired
+	FileManagerService fileManagerService;
+	
 	@Bean
 	public ProcessingResult process(QueueEvent queueEvent) {
 		
-		return new ProcessingResult(ProcessingResult.State.FAILURE, "not processed");
+		fileManagerService.storeMetadata(queueEvent, queueEvent.toJson());
+		
+		return new ProcessingResult(ProcessingResult.State.SUCCESS, "event processed");
 				
 	}
 
