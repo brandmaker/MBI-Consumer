@@ -1,7 +1,9 @@
 package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
 
+import java.util.Enumeration;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
@@ -63,9 +65,16 @@ public class HookControllerImpl implements HookController {
 	 * @see com.brandmaker.mediapool.webhook.rest.controller.HookController#post(com.brandmaker.mediapool.webhook.rest.controller.HookRequestBody, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public Response post(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletResponse httpResponse) {
+	public Response post(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletResponse httpResponse, HttpServletRequest httpRequest) {
 		
 		long start = System.currentTimeMillis();
+		
+		Enumeration<String> headerNames = httpRequest.getHeaderNames();
+		while ( headerNames != null && headerNames.hasMoreElements() ) {
+			String name = headerNames.nextElement();
+			LOGGER.info( name + " = " + httpRequest.getHeader(name));
+		}
+			
 		
 		try {
 			
@@ -87,47 +96,49 @@ public class HookControllerImpl implements HookController {
 			/*
 			 * process event array
 			 */
-			for ( Event event : events )
-			{
-				
-				/*
-				 * TODO check if the event is targeted to this consumer ... ?
-				 */
-				
-				
-				/** data structure that will be put into the queue */
-				JSONObject eventObject = event.toJson();
-				
-				
-				/*
-				 * these props need to go into each event element, as within the subsequent queue, 
-				 * there is no "batch" but single, disjoint events
-				 */
-				try {
-					for ( String prop : copyProps ) {
-						if ( requestObject.has(prop) )
-							eventObject.put(prop, requestObject.get(prop));
+			if ( events != null ) {
+				for ( Event event : events )
+				{
+					
+					/*
+					 * TODO check if the event is targeted to this consumer ... ?
+					 */
+					
+					
+					/** data structure that will be put into the queue */
+					JSONObject eventObject = event.toJson();
+					
+					
+					/*
+					 * these props need to go into each event element, as within the subsequent queue, 
+					 * there is no "batch" but single, disjoint events
+					 */
+					try {
+						for ( String prop : copyProps ) {
+							if ( requestObject.has(prop) )
+								eventObject.put(prop, requestObject.get(prop));
+						}
 					}
+					catch ( JSONException j ) {
+						throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "(4) cannot amend event object", j);
+					}
+					
+					/*
+					 * The JSON structure now should match the QueueEvent object structure
+					 */
+					
+					/*
+					 * Push event to the processing queue
+					 * We will not process this event within this loop!
+					 * 
+					 * We are using spring JMS together with ActiveMQ as a broker. Configuration can be done via the application.yaml
+					 * 
+					 */
+					processingQueueSender.send(eventObject.toString());
+					
+					LOGGER.info( (n++) + ". Event queued" + eventObject.toString(4) );
+					
 				}
-				catch ( JSONException j ) {
-					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "(4) cannot amend event object", j);
-				}
-				
-				/*
-				 * The JSON structure now should match the QueueEvent object structure
-				 */
-				
-				/*
-				 * Push event to the processing queue
-				 * We will not process this event within this loop!
-				 * 
-				 * We are using spring JMS together with ActiveMQ as a broker. Configuration can be done via the application.yaml
-				 * 
-				 */
-				processingQueueSender.send(eventObject.toString());
-				
-				LOGGER.info( (n++) + ". Event queued" + eventObject.toString(4) );
-				
 			}
 			
 			/*

@@ -6,11 +6,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import com.brandmaker.mbiconsumer.example.webhook.rest.controller.HookController;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
+
+
+@OpenAPIDefinition(servers = { @Server(url = "https://www.amthor.de/spring"),
+		@Server(url = "http://localhost:8080") } 
+//		,info = @Info(title = "the title", 
+//		version = "v1", 
+//		description = "My API", 
+//		license = @License(name = "Apache 2.0", 
+//		url = "http://foo.bar"), 
+//		contact = @Contact(url = "http://gigantic-server.com", name = "Fred", email = "Fred@gigagantic-server.com"))
+)
 
 /**
  * <p>
@@ -55,6 +70,17 @@ public class Application extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder.sources(Application.class);
+	}
+	
+	/**
+	 * This bean will handle X-Forwarded headers if running behind a reverse proxy
+	 * and map internal requests back to the external reverse proxy endpoint properly
+	 * 
+	 * @return
+	 */
+	@Bean
+	ForwardedHeaderFilter forwardedHeaderFilter() {
+	   return new ForwardedHeaderFilter();
 	}
 
 }

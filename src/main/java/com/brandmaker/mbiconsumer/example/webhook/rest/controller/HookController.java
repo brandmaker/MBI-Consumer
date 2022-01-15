@@ -1,5 +1,6 @@
 package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,10 @@ import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 /**
  * <p>Hook controller
@@ -40,6 +44,6 @@ public interface HookController {
 			consumes="application/json", 
 			produces="application/json")
 	@ResponseStatus(value=HttpStatus.ACCEPTED, reason="Request accepted")
-	Response post(@RequestBody WebhookTargetPayloadHttpEntity requestBody, HttpServletResponse httpResponse);
+	Response post(@RequestBody WebhookTargetPayloadHttpEntity requestBody, HttpServletResponse httpResponse, HttpServletRequest httpRequest);
 
 }

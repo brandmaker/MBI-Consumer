@@ -44,12 +44,24 @@ spring:
           # if this is a local dev machine, and you have a port forwarding enabled to that, ensure the Win10/Mac FW isn't blocking that!
           # if your port is different from 80, please contact BM support to open that port in the FW for outgoing connections on your instance as well!
           
+          contextPath: /spring
+          
+          use-forward-headers: true
+          forward-headers-strategy: framework
+          
+          servlet:
+             context-path: /spring
+
      active-mq:
           queue-name: mbievents.queue
           #broker-url: tcp://localhost:61616 # this requires ActiveMQ to be up and running!
           broker-url: vm://embedded-broker?broker.persistent=true # internal broker, uncomment if no ActiveMQ or any other compatible broker is installed
           #vm://localhost:61616?broker.useShutdownHook=false&broker.brokerName=webcache
 springdoc:
+#     api-docs:
+#        path: /spring/v3/api-docs
+        
      swagger-ui:
+          #configUrl: /spring/v3/api-docs/swagger-config
           path: /api-docs.html
 
