@@ -21,17 +21,21 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 import com.brandmaker.mbiconsumer.example.webhook.rest.controller.HookController;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.servers.Server;
 
 
 @OpenAPIDefinition(servers = { @Server(url = "https://www.amthor.de/spring"),
-		@Server(url = "http://localhost:8080") } 
-//		,info = @Info(title = "the title", 
-//		version = "v1", 
-//		description = "My API", 
-//		license = @License(name = "Apache 2.0", 
-//		url = "http://foo.bar"), 
-//		contact = @Contact(url = "http://gigantic-server.com", name = "Fred", email = "Fred@gigagantic-server.com"))
+		@Server(url = "http://localhost:8080") },
+		info = @Info(title = "MBI WebHook Consumer Example", 
+						version = "0.0.1. Snapshot", 
+						description = "MBI WebHook Consumer Example Implementation", 
+						license = @License(name = "Apache 2.0", 
+							url = "https://github.com/brandmaker/MBI-Consumer"), 
+						contact = @Contact(url = "https://www.brandmaker.com", name = "A. Amthor", email = "axel.amthor@brandmaker.com")
+				)
 )
 
 /**
@@ -40,7 +44,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
  * <p>
  * Security auto config is <b>not loaded</b here
  * 
- * @see com.brandmaker.mediapool.webhook.consumer.SecurityConfiguration
+ * @see com.brandmaker.mbiconsumer.example.webhook.consumer.SecurityConfiguration
  * 
  * @author axel.amthor
  *
