@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html style="padding: 10px; color: white; background: linear-gradient(180deg, #0c0f2c, #0e133c); height: 100%; font-size: 1.1em">
+	<head>
+		<title>BrandMaker MBI Comsumer Example</title>
+		
+		<style type="text/css">
+			table {
+				border: none;
+				padding: 5px;
+				background-color: #5c6174;
+				border-radius: 5px;
+			}
+			
+			td {
+				padding: 5px;
+				padding-bottom: 12px
+			}
+			
+			td.small {
+				font-size: 0.8em;
+			}
+			
+			.error {
+				color: #f95b02;
+			}
+			
+			.success {
+				color: yellow;
+				font-size: 1.1em;
+			}
+			
+			tr {
+				margin-top: 10px;
+			}
+			
+			input {
+				font-size: 1.0em;
+			}
+			
+			a {
+				color: #f95b02;
+				text-decoration: underline;
+			}
+			
+			body {
+				font-family: "Calibri", sans-serif;
+				margin-left: 210px;
+				margin-top: 80px
+			}
+			
+			.hero__logolink {
+				position: absolute;
+				top: 1rem;
+				left: 1rem;
+				width: 150px;
+				height: 75px;
+				background-repeat: no-repeat;
+				background-size: contain;
+				background-image:
+					url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjAuMywgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0ODcuNyAxNDYuOCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDg3LjcgMTQ2Ljg7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KCS5zdDF7ZmlsbDp1cmwoI1NWR0lEXzFfKTt9Cjwvc3R5bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNTUuOCwxMDYuN1Y1OS42aDEzLjljOC45LDAsMTQuMywzLjUsMTQuMywxMS42YzAsNS40LTIuNyw5LjMtNy43LDEwLjRWODJjNi45LDEuNSwxMCw1LjQsMTAsMTIKCWMwLDkuNi02LjksMTMuMS0xNi42LDEzLjFoLTEzLjlWMTA2Ljd6IE0xNjcsNzguOWM1LjQsMCw4LjUtMS45LDguNS02LjljMC01LTMuMS02LjItOC4xLTYuMmgtMy41djEzLjFsMS44LDBMMTY3LDc4Ljl6CgkgTTE2Ny43LDEwMC4xYzUuOCwwLDkuNi0xLjksOS42LTcuN2MwLTUuOC0zLjktNy43LTkuNi03LjdoLTQuMnYxNS40SDE2Ny43TDE2Ny43LDEwMC4xeiBNMTkzLjIsMTA2LjdWNzMuOWg3Ljd2NS44bDAsMAoJYzEuOS00LjIsNS02LjYsMTAuNC02LjZ2Ny4zaC0xLjVjLTUuNCwwLjQtNy43LDMuNS04LjUsNy43Yy0wLjQsMS41LTAuNCwzLjEtMC40LDV2MTIuN0wxOTMuMiwxMDYuN0wxOTMuMiwxMDYuN3ogTTIzMy4zLDEwNi43Cgl2LTQuMmwwLDBjLTEuOSwzLjUtNS40LDUtOS4zLDVjLTUuOCwwLTkuMy0zLjEtOS4zLTguMWMwLTguMSw3LjMtMTEuNiwxNi42LTExLjZoMS41di0yLjdjMC00LjItMC44LTYuNi00LjYtNi42CgljLTMuMSwwLTUsMS4yLTUuNCw1aC03LjNjMC02LjksNS40LTEwLDEyLjctMTBjOC4xLDAsMTIuMywzLjEsMTIuMywxMS4ydjIyLjRoLTcuM1YxMDYuN3ogTTIyNi40LDEwMS43YzIuMywwLDQuNi0xLjUsNS44LTMuOQoJYzAuOC0xLjUsMS4yLTMuNSwxLjItNS40di0wLjhoLTEuMmMtNSwwLTkuMywxLjktOS4zLDYuMkMyMjIuOSwxMDAuOSwyMjQuMSwxMDEuNywyMjYuNCwxMDEuN0wyMjYuNCwxMDEuN3ogTTI2Ny43LDEwNi43Vjg3LjQKCWMwLTUuNC0wLjQtNy43LTMuOS03LjdjLTMuMSwwLTUsMi43LTUuOCw1LjhjLTAuOCwyLjMtMS4yLDUtMS4yLDcuN3YxMy4xaC03LjdWNzMuOWg3LjNWODBsMCwwYzEuNS0zLjUsNC4yLTYuOSw5LjMtNi45CgljNS44LDAsOS4zLDQuMiw5LjMsMTAuNHYyMi44aC03LjNWMTA2Ljd6IE0zMDIsMTA2Ljd2LTQuMmwwLDBjLTEuNSwzLjUtNC42LDUtOC4xLDVjLTkuMywwLTEyLTguMS0xMi0xN2MwLTkuMywzLjUtMTcsMTIuMy0xNwoJYzMuNSwwLDUuOCwxLjIsNy43LDQuMmwwLDBWNTkuNmg3Ljd2NDcuMUMzMDkuMywxMDYuNywzMDIsMTA2LjcsMzAyLDEwNi43eiBNMzAwLjksOTYuNmMwLjgtMS45LDAuOC00LjIsMC44LTYuNnMwLTUtMC44LTcuMwoJYy0wLjgtMi4zLTIuMy00LjItNS00LjJjLTUsMC01LjgsNi42LTUuOCwxMi4zYzAsNS40LDEuMiwxMC44LDUuOCwxMC44QzI5OC41LDEwMS43LDMwMC4xLDk5LjMsMzAwLjksOTYuNnoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTM1OCwxMDYuN1Y3MGwwLDBsLTEyLDM2LjdoLTguMWwtMTItMzYuN2wwLDB2MzYuN2gtNy4zVjU5LjZoMTEuNmwxMiwzN2wwLDBsMTItMzdoMTEuMnY0Ny4xSDM1OHoKCSBNMzkxLjIsMTA2Ljd2LTQuMmwwLDBjLTEuOSwzLjUtNS40LDUtOS4zLDVjLTUuOCwwLTkuMy0zLjEtOS4zLTguMWMwLTguMSw3LjMtMTEuNiwxNi42LTExLjZoMS41di0yLjdjMC00LjItMC44LTYuNi00LjYtNi42CgljLTMuMSwwLTUsMS4yLTUuNCw1SDM3M2MwLTYuOSw1LjQtMTAsMTIuNy0xMGM4LjEsMCwxMi4zLDMuMSwxMi4zLDExLjJ2MjIuNGgtNi45VjEwNi43eiBNMzg0LjIsMTAxLjdjMi4zLDAsNC42LTEuNSw1LjgtMy45CgljMC44LTEuNSwxLjItMy41LDEuMi01LjR2LTAuOEgzOTBjLTUsMC05LjMsMS45LTkuMyw2LjJDMzgwLjcsMTAwLjksMzgyLjMsMTAxLjcsMzg0LjIsMTAxLjd6IE00MjUuMSwxMDYuN2wtMTAtMTUuOGwwLDB2MTUuOGgtNy43CglWNTkuNmg3Ljd2MjdsMCwwbDkuMy0xMi43aDkuM2wtMTEuMiwxNC4zbDEyLjMsMTguMWgtOS42VjEwNi43eiBNNDYxLjQsMTA2LjNjLTIuNywwLjgtNS44LDEuMi04LjUsMS4yYy0xMiwwLTE3LTcuMy0xNy0xOC41CgljMC04LjksNC4yLTE1LjQsMTMuOS0xNS40YzguMSwwLDEyLjMsNS40LDEyLjMsMTMuMXYyLjNoLTE4LjV2MC44YzAsNi45LDMuOSwxMi4zLDExLjIsMTIuM2MxLjksMCw0LjItMC40LDYuMi0xLjJ2NS40SDQ2MS40egoJIE00NTQuOCw4My45YzAtMy41LTEuOS01LjgtNS01LjhjLTMuNSwwLTUuNCwyLjctNS44LDUuOEg0NTQuOEw0NTQuOCw4My45eiBNNDY5LjUsMTA2LjdWNzMuOWg3Ljd2NS44bDAsMGMxLjktNC4yLDUtNi42LDEwLjQtNi42Cgl2Ny4zaC0xLjVjLTUuNCwwLjQtNy43LDMuNS04LjUsNy43Yy0wLjQsMS41LTAuNCwzLjEtMC40LDV2MTIuN0w0NjkuNSwxMDYuN0w0NjkuNSwxMDYuN3oiLz4KPGxpbmVhckdyYWRpZW50IGlkPSJTVkdJRF8xXyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIzLjYyNjAyNGUtMDIiIHkxPSI3My40ODY4IiB4Mj0iMTQyLjg0MTkiIHkyPSI3My40ODY4Ij4KCTxzdG9wICBvZmZzZXQ9IjAiIHN0eWxlPSJzdG9wLWNvbG9yOiNGQjlGMjciLz4KCTxzdG9wICBvZmZzZXQ9IjEiIHN0eWxlPSJzdG9wLWNvbG9yOiNGOTU5MDAiLz4KPC9saW5lYXJHcmFkaWVudD4KPHBhdGggY2xhc3M9InN0MSIgZD0iTTEzOS45LDI1LjJjLTMuMS0zLjktOC41LTUuOC0xMi4zLTVjLTEzLjUsMi43LTE0LjcsMTctMjQuMywyNy44Yy03LjcsOC4xLTE3LjgsMTItMjguNiwxMC40CgljLTEwLjgtMy4xLTE4LjUtMTAuOC0yMi0yMS4yYy00LjYtMTMuNSwwLTI3LjQtMTEuMi0zNS4xYy0zLjUtMi4zLTguOS0yLjctMTMuMS0wLjRjLTcuMywzLjUtMTAsMTQuNy0zLjksMjIKCUMzNSwzNi40LDUwLDM2LjgsNTYuMiw1NS4zYzEuMiw0LjIsMS41LDEwLjQsMC44LDE1Yy0xLjIsNC42LTMuOSwxMC02LjksMTMuNWMtMTMuMSwxNC4zLTI3LDguOS00MS43LDE2LjIKCWMtOC41LDQuMi0xMC44LDE1LjQtNS40LDIxLjZjMy4xLDMuOSw4LjUsNS44LDEyLjMsNUMyOC44LDEyNCwzMCwxMDkuOCwzOS42LDk5YzcuNy04LjEsMTcuOC0xMiwyOC42LTEwLjQKCWMxMC44LDMuMSwxOC41LDEwLjgsMjIsMjEuMmM0LjYsMTMuNSwwLDI3LjQsMTEuMiwzNS4xYzMuNSwyLjMsOC45LDIuNywxMy4xLDAuNGM3LjMtMy41LDEwLTE0LjcsMy45LTIyCgljLTEwLjQtMTIuNy0yNS41LTEzLjEtMzEuNi0zMS42Yy0xLjItNC4yLTEuOS0xMC40LTAuOC0xNWMxLjItNC42LDMuOS0xMCw2LjktMTMuNWMxMy4xLTE0LjMsMjctOC45LDQxLjctMTYuMgoJQzE0Myw0Mi42LDE0NS4zLDMxLjQsMTM5LjksMjUuMnogTTczLjIsODMuNWMtNS40LDAuNC0xMC0zLjktMTAuNC05LjNjLTAuNC01LjQsMy45LTEwLDkuMy0xMC40YzUuNC0wLjQsMTAsMy45LDEwLjQsOS4zCglDODIuOCw3OC41LDc4LjYsODMuMSw3My4yLDgzLjV6Ii8+Cjwvc3ZnPgo=);
+			}
+			
+			.button {
+				font-size: 1.1em;
+				font-weight: bold;
+				padding: 5px 10px 5px 10px;
+				background-color: silver;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+		</style>
+		
+	</head>
+	<body>
+		<a class="hero__logolink" href="/"></a>
+			<h1>Example Consumer for BrandMaker Message Based Integration (MBI)</h1>
+			
+				<p>Please refer to the documents on <a href="https://github.com/brandmaker/MBI-Consumer" target="blank">GitHub</a></p>
+				
+				<p>View the local API documentation at <a href="api-docs.html" target="blank">api-docs</a></p>
+				
+				<p>Please make yourself familiar with the BrandMaker MBI service. <br>
+				   Further information is available on 
+			   	   our developers web-site  <a href="https://developers.brandmaker.com/guides/" target="_blank">https://developers.brandmaker.com</a></p>
+	
+	
+	</body>
+</html>
