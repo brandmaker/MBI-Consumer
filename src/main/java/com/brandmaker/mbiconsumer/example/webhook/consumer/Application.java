@@ -37,18 +37,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
 						contact = @Contact(url = "https://www.brandmaker.com", name = "A. Amthor", email = "axel.amthor@brandmaker.com")
 				)
 )
-
-/**
- * <p>
- * Spring Boot Application starter
- * <p>
- * Security auto config is <b>not loaded</b here
- * 
- * @see com.brandmaker.mbiconsumer.example.webhook.consumer.SecurityConfiguration
- * 
- * @author axel.amthor
- *
- */
 @EnableWebSecurity
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 
@@ -60,6 +48,17 @@ import io.swagger.v3.oas.annotations.servers.Server;
 		"com.brandmaker.mbiconsumer.example.dtos",
 		"com.brandmaker.mbiconsumer.example",
 		})
+/**
+ * <p>
+ * Spring Boot Application starter
+ * <p>
+ * Security auto config is <b>not loaded</b here
+ * 
+ * @see com.brandmaker.mbiconsumer.example.webhook.consumer.SecurityConfiguration
+ * 
+ * @author axel.amthor
+ *
+ */
 public class Application extends SpringBootServletInitializer {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -70,7 +69,12 @@ public class Application extends SpringBootServletInitializer {
 	 */
 	public static void main(String[] args) {
 
-		LOGGER.info("Start of MBI Consumer");
+		LOGGER.info("\n\n" +
+				" ____                      _ __  __       _               __  __ ____ ___    ____                                          \n" + 
+				"| __ ) _ __ __ _ _ __   __| |  \\/  | __ _| | _____ _ __  |  \\/  | __ )_ _|  / ___|___  _ __  ___ _   _ _ __ ___   ___ _ __ \n" + 
+				"|  _ \\| '__/ _` | '_ \\ / _` | |\\/| |/ _` | |/ / _ \\ '__| | |\\/| |  _ \\| |  | |   / _ \\| '_ \\/ __| | | | '_ ` _ \\ / _ \\ '__|\n" + 
+				"| |_) | | | (_| | | | | (_| | |  | | (_| |   <  __/ |    | |  | | |_) | |  | |__| (_) | | | \\__ \\ |_| | | | | | |  __/ |   \n" + 
+				"|____/|_|  \\__,_|_| |_|\\__,_|_|  |_|\\__,_|_|\\_\\___|_|    |_|  |_|____/___|  \\____\\___/|_| |_|___/\\__,_|_| |_| |_|\\___|_|   \n\n");
 		
 		SpringApplication.run(Application.class, args);
 	}
