@@ -5,7 +5,11 @@
 # (c) BrandMaker GmbH, December 2021
 #
 ##
- 
+
+logging:
+   level:
+      root: INFO
+      
 spring:
      main:
          allow-circular-references: true     
@@ -56,8 +60,9 @@ spring:
              context-path: /spring
              
           error:
-             whitelabel:
-                enabled: false
+             include-message: always
+#             whitelabel:
+#                enabled: false
 
      active-mq:
           queue-name: mbievents.queue

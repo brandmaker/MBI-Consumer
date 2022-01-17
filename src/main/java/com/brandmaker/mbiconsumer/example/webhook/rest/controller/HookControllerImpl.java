@@ -1,5 +1,6 @@
 package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -12,9 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity;
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity.Event;
@@ -61,18 +65,23 @@ public class HookControllerImpl implements HookController {
 			WebhookTargetPayloadHttpEntity.PROP_SYSTEMBASEURI, 
 			WebhookTargetPayloadHttpEntity.PROP_SYSTEMID };
 	
+	@Bean
+    public HandlerExceptionResolver customHandlerExceptionResolver() {
+        return new RestResponseEntityExceptionHandler();
+    }
+	 
 	/* (non-Javadoc)
 	 * @see com.brandmaker.mediapool.webhook.rest.controller.HookController#post(com.brandmaker.mediapool.webhook.rest.controller.HookRequestBody, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public Response post(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletResponse httpResponse, HttpServletRequest httpRequest) {
+	public Response post( WebhookTargetPayloadHttpEntity webhookEventRequest, Boolean eventsInResponse, HttpServletResponse httpResponse, HttpServletRequest httpRequest) throws HookControllerException {
 		
 		long start = System.currentTimeMillis();
 		
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		while ( headerNames != null && headerNames.hasMoreElements() ) {
 			String name = headerNames.nextElement();
-			LOGGER.info( name + " = " + httpRequest.getHeader(name));
+			LOGGER.debug( name + " = " + httpRequest.getHeader(name));
 		}
 			
 		
@@ -92,6 +101,7 @@ public class HookControllerImpl implements HookController {
 			 */
 			List<Event> events = webhookEventRequest.getEvents();
 			int n = 1;
+			List<Event> processedEvents = new ArrayList<>();;
 			
 			/*
 			 * process event array
@@ -136,7 +146,9 @@ public class HookControllerImpl implements HookController {
 					 */
 					processingQueueSender.send(eventObject.toString());
 					
-					LOGGER.info( (n++) + ". Event queued" + eventObject.toString(4) );
+					processedEvents.add(event);
+					
+					LOGGER.debug( (n++) + ". Event queued" + eventObject.toString(4) );
 					
 				}
 			}
@@ -155,8 +167,21 @@ public class HookControllerImpl implements HookController {
 			 * 
 			 */
 			httpResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-			return new Response("accepted", HttpServletResponse.SC_ACCEPTED);
+			httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			httpResponse.setCharacterEncoding("UTF-8");
 			
+			Response r = new Response("accepted", HttpServletResponse.SC_ACCEPTED);
+			
+			if ( eventsInResponse )
+				r.setEvents(processedEvents);
+			
+			return r;
+	        
+			
+		} 
+		catch ( Exception e ) {
+			LOGGER.error("Error:", e);
+			throw new HookControllerException(e.getMessage()); 
 		}
 		finally
 		{

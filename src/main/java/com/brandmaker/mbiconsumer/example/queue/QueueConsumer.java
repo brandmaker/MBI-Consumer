@@ -35,7 +35,7 @@ public class QueueConsumer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueueConsumer.class);
 
-	/** The AssetManager is responsible for handling all necessary API operations */
+	/** The Event Processor is responsible for handling all necessary API operations */
 	@Autowired
 	EventProcessor eventProcessor;
 	

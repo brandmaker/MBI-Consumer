@@ -4,8 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity;
@@ -35,15 +40,24 @@ public interface HookController {
 	 * @return Response message object with detailed status and error code
 	 * 
 	 * @param requestBody The auto-converted POST data. If this can not be converted to the HookRequestBody PoJo, an excpetion will be thrown
-	 * @see {@link HookRequestBody}
+	 * @param eventsInResponse Whether to copy processed events to the response
 	 * @param httpResponse The http reaponse object
+	 * @param httpRequest The http request object
+	 * 
+	 * @throws HookControllerException 
 	 * 
 	 */
-	@PostMapping(
+	@RequestMapping(
+			method = RequestMethod.POST,
 			path="/hook", 
-			consumes="application/json", 
-			produces="application/json")
-	@ResponseStatus(value=HttpStatus.ACCEPTED, reason="Request accepted")
-	Response post(@RequestBody WebhookTargetPayloadHttpEntity requestBody, HttpServletResponse httpResponse, HttpServletRequest httpRequest);
+			consumes=MediaType.APPLICATION_JSON_VALUE, 
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody 
+	Response  post(
+			@RequestBody WebhookTargetPayloadHttpEntity requestBody, 
+			@RequestParam(name = "eventsInResponse", required = false, defaultValue = "false") Boolean eventsInResponse,
+			HttpServletResponse httpResponse, 
+			HttpServletRequest httpRequest
+	) throws HookControllerException;
 
 }
