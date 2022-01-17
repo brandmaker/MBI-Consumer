@@ -27,6 +27,13 @@ This is just an example to show how events from MBI can be received and safely p
 dumping the request to the filesystem.
 
 
+## API documentation
+
+Under the link `https://<your server>:8080/api-docs.html` there is an API documentaion of this WebHook. Be aware that this is currently the API of *this consumer* and not any 
+API of BrandMaker MBI. Once you try this via the swagger UI, you may therefor simulate the submission of an MBI event. This is just for testing this example consumer.
+Furthermore, the API of this consumer is based on the requirements to a BrandMaker MBI consumer as described on [https://developers.brandmaker.com/](https://developers.brandmaker.com/).
+
+
 ## Project state
 
 [![Java CI with Maven](https://github.com/brandmaker/MBI-Consumer/actions/workflows/maven.yml/badge.svg)](https://github.com/brandmaker/MBI-Consumer/actions/workflows/maven.yml)
