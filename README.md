@@ -21,7 +21,7 @@ This "consumer" is based on spring-boot. It establishes a REST service on the UR
 an MBI event message, the message is pushed into an internal JMS queue for asynchroneous processing.
 
 From that queue, the message is picked up by a queue listener and then processed. "Processing" means: the request data is stored in the local working directory 
-under `requests / &lt;customer id> / &lt;system id> / event_&lt;timestamp>.json`
+under `requests / <customer id> / <system id> / event_<timestamp>.json`
 
 This is just an example to show how events from MBI can be received and safely processed. It actually lacks of any "intelligent" business logic other than just 
 dumping the request to the filesystem.
