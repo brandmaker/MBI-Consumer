@@ -43,5 +43,7 @@ Furthermore, the API of this consumer is based on the requirements to a BrandMak
 ## Reference Documentation
 For further reference, please consider the following sections:
 
+* [Spring documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
 * [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.3.0.M3/maven-plugin/html/)
+* [https://developers.brandmaker.com/](https://developers.brandmaker.com/)
