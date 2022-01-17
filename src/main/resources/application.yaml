@@ -9,12 +9,15 @@
 spring:
      main:
          allow-circular-references: true     
+#        banner-mode: off
+         
      mvc:
         pathmatch:
            matching-strategy: ant_path_matcher
 
      application:
           name: BrandMaker MBI Demo Consumer
+          title: BrandMaker MBI Demo Consumer
           
           system:
           

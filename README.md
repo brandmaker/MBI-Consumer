@@ -10,18 +10,21 @@ For details on MBI, please refer to [https://developers.brandmaker.com/](https:/
 ## Usage
 
 * Clone this project
-* Build with maven (mvn -B package)
-* Start the application (java -jar target/example-...jar)
+* Build with maven (`mvn -B package`)
+* Start the application (`java -jar target/mbiconsumer-example-...jar`)
 * Register the application within your BrandMaker instance (Administration / Fusion / Integration)
-* Alternatively, you may check the swagger documentation on http://&lt;your server>:8080/api-docs.html and issue requests against the demo example from over there
+* Alternatively, you may check the swagger documentation on `http://&lt;your server>:8080/api-docs.html` and issue requests against the demo example from over there
 
 ## Short Description
 
-This "consumer" is based on spring-boot. It establishes a REST service on the URL http://&lt;your server>:8080/hook, listenening for incoming MBI POST requests. If the request is an MBI event message, the message is pushed into an internal JMS queue for asynchroneous processing.
+This "consumer" is based on spring-boot. It establishes a REST service on the URL `http://&lt;your server>:8080/hook`, listenening for incoming MBI POST requests. If the request is 
+an MBI event message, the message is pushed into an internal JMS queue for asynchroneous processing.
 
-From that queue, the message is picked up by a queue listener and then processed. "Processing" means: the request data is stored in the local working directory under requests / &lt;customer id> / &lt;system id> / event_&lt;timestamp>.json
+From that queue, the message is picked up by a queue listener and then processed. "Processing" means: the request data is stored in the local working directory 
+under `requests / &lt;customer id> / &lt;system id> / event_&lt;timestamp>.json`
 
-This is just an example to show how events from MBI can be received and safely processed. It actually lacks of any "intelligent" business logic other than just dumping the request to the filesystem.
+This is just an example to show how events from MBI can be received and safely processed. It actually lacks of any "intelligent" business logic other than just 
+dumping the request to the filesystem.
 
 
 ## Project state

@@ -11,13 +11,15 @@
 	</parent>
 	
 	<groupId>com.brandmaker.mbiconsumer</groupId>
-	<artifactId>example</artifactId>
+	<artifactId>mbiconsumer-example</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>example</name>
+	<name>MBI consumer example</name>
 	
-	<description>Example blue print implementation of an MBI consumer</description>
+	<description>
+		Example blue print implementation of an MBI consumer
+	</description>
 	
-		<organization>
+	<organization>
 		<name>BrandMaker GmbH</name>
 		<url>http://www.brandmaker.com/</url>
 	</organization>
