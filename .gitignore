@@ -30,3 +30,4 @@ build/
 /activemq-data/
 /bin/
 /events/
+/deprecated/
