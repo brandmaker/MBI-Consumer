@@ -1,12 +1,41 @@
 package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.Provider.Service;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.Signature;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -78,10 +107,11 @@ public class HookControllerImpl implements HookController {
 		
 		long start = System.currentTimeMillis();
 		
+		// spit out all headers, let's see whether we have a Authentication Header with an HTTP signature
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		while ( headerNames != null && headerNames.hasMoreElements() ) {
 			String name = headerNames.nextElement();
-			LOGGER.debug( name + " = " + httpRequest.getHeader(name));
+			LOGGER.info( name + " = " + httpRequest.getHeader(name));
 		}
 			
 		
@@ -92,8 +122,16 @@ public class HookControllerImpl implements HookController {
 			LOGGER.debug(requestObject.toString(4));
 			
 			/*
-			 * TODO validate the data with the signature and the configured pub key
+			 * Validate the data with the signature and the configured pub key
 			 */
+			boolean signatureValid = false;
+			String authHeader = httpRequest.getHeader("Authorization");
+			
+			if ( authHeader != null && !authHeader.isBlank() )
+				signatureValid = validateSignature(webhookEventRequest, httpRequest, authHeader);
+			        
+			if ( !signatureValid )
+				return createResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "unauthorized");
 
 			
 			/*
@@ -166,11 +204,7 @@ public class HookControllerImpl implements HookController {
 			 * 
 			 * 
 			 */
-			httpResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-			httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			httpResponse.setCharacterEncoding("UTF-8");
-			
-			Response r = new Response("accepted", HttpServletResponse.SC_ACCEPTED);
+			Response r = createResponse(httpResponse, HttpServletResponse.SC_ACCEPTED, "accepted");
 			
 			if ( eventsInResponse )
 				r.setEvents(processedEvents);
@@ -188,6 +222,140 @@ public class HookControllerImpl implements HookController {
 			LOGGER.info("Finished processing webhook request  in " + (System.currentTimeMillis() - start) + " msec");
 		}
 
+	}
+
+	private boolean validateSignature(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletRequest httpRequest, String authHeader)
+																												throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+		
+		boolean signatureValid = false;
+		
+		// get the header value w/o the scheme
+		String rawHeader = authHeader.replaceFirst("[sS]ignature ", ""); // mind the blank at the end!
+		
+		// split the raw header value in a key-value map and eliminate the quotes
+		Map<String, String> headerKeyMap = Arrays.asList(rawHeader.split(",")).stream().map(x -> x.split("=", 2)).collect(Collectors.toMap(x -> x[0].toLowerCase(), x -> x[1].trim().replaceAll("^'|'$", "")));
+		
+		for (Map.Entry<String, String> entry : headerKeyMap.entrySet()) {
+		    LOGGER.debug(String.format("Header Key: %s = %s", entry.getKey(), entry.getValue()));
+		}
+		
+		// these are the headers, from which the data is picked to be signed
+		String[] validationHeaders = headerKeyMap.get("headers").split("[, ]");
+		
+		// get the signature data by retrieving the header values and concatenate to one string separated by a space/blank
+		String data = "";
+		for ( String validationHeader : validationHeaders ) {
+			String h = validationHeader.toLowerCase();
+			String s = null;
+			if ( h.equals("host") ) {
+				
+				/*
+				 * if this service is running behind a reverse proxy, it may contain name/ip of the reverse proxy 
+				 * rather than the name of the requested server! So we need to look for this header first!
+				 */
+				s = httpRequest.getHeader("x-forwarded-server"); 
+				
+				if ( s == null || s.isBlank() )
+					s = httpRequest.getHeader(h); 
+			}
+			else {
+				s = httpRequest.getHeader(h); 
+			}
+			LOGGER.debug(validationHeader + " = " + s);
+				
+			if ( s != null && !s.isBlank() ) {
+				if ( data.length() > 0 )
+					data = data.concat(" ");
+				data = data.concat(s);
+			}
+		}
+		LOGGER.debug("data to validate: " + data);
+		
+		// get the effective base64 decoded signature
+		byte[] sigDecoded = Base64.getDecoder().decode(headerKeyMap.get("signature").getBytes());
+		String algo = headerKeyMap.get("algorithm");
+		
+		/*
+		 * the value in the signature cannot be used as algorithm directly, it just indicates an algorithm
+		 */
+		if ( algo.equals("rsa-sha256") )
+			algo = "SHA256withRSA";
+		
+		// get the public key. Please refer to the manual regarding this!
+		PublicKey publicKey = getPublicKey(webhookEventRequest.getSystemBaseUri()); 
+			
+		try {
+			
+			Signature sig = Signature.getInstance(algo);
+		    sig.initVerify(publicKey);
+		    sig.update(data.getBytes());
+		    
+			boolean result = sig.verify(sigDecoded);
+			LOGGER.info("Signature verification of '" + data + "' with " + algo + ": " + (result?"passed":"failed") );
+			
+			signatureValid = true;
+		}
+		catch (Exception e) {
+			LOGGER.error("Key error", e);
+		}
+		return signatureValid;
+	}
+
+	/**
+	 * This method should encapsulate the public key for the sending instance. For testing purposes, 
+	 * this is grabbed from the sender dynamically <b>which is highly discouraged for production!</b>
+	 * Instead, put the x509 string in here statically!
+	 * 
+	 * @return public key
+	 * @throws CertificateException
+	 * @throws IOException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws InvalidKeySpecException 
+	 */
+	private PublicKey getPublicKey(String hostUrl) throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+		
+		String cert = getCertFromBMUrl(hostUrl);
+		
+		byte[] byteKey = Base64.getDecoder().decode(cert.getBytes());
+		LOGGER.info("Length: " + byteKey.length);
+        X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+
+        return kf.generatePublic(X509publicKey);
+		
+	}
+
+	private String getCertFromBMUrl(String hostUrl) throws MalformedURLException, IOException {
+		String cert;
+		URL url = new URL(hostUrl.replaceAll("/$", "") + "/rest/sso/keys/public");
+		URLConnection con = url.openConnection();
+		con.connect();
+		InputStream in = con.getInputStream();
+		String encoding = con.getContentEncoding();
+		encoding = encoding == null ? "UTF-8" : encoding;
+		
+		cert = IOUtils.toString(in, encoding);
+		LOGGER.info("Cert " + cert);
+		
+		return cert;
+	}
+
+	private Response createResponse(HttpServletResponse httpResponse, int code, String message) {
+		httpResponse.setStatus(code);
+		httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		httpResponse.setCharacterEncoding("UTF-8");
+		Response r = new Response(message, code);
+		return r;
+	}
+	
+	private void dumpAlgorithms() {
+		ArrayList<String> algorithms = new ArrayList<>();
+		for (Provider provider : Security.getProviders())
+		    for (Service service : provider.getServices()) {
+		        if (service.getType().equals("Signature"))
+		            algorithms.add(service.getAlgorithm());
+		    }
+		LOGGER.info(algorithms.toString());
 	}
 	
 }

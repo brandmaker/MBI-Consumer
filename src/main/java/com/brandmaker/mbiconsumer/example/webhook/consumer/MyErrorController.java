@@ -58,25 +58,5 @@ public class MyErrorController implements ErrorController {
 	    // we have an "error.html" in templates
    	    return "error";
 	    
-	}
-	
-	
-//	@RequestMapping(
-//			value="/error",
-//			headers = "accept=application/json",
-//			produces="application/json"
-//	)
-//	public Response handleRestError(HttpServletRequest request, Model model, Exception ex) {
-//
-//		// generate some ui friendly messages
-//	    Integer status = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-//	    
-//	    Response r = new Response(HttpStatus.valueOf( status.intValue() ).getReasonPhrase(), status.intValue());
-//	    
-//	    return r;
-//	    
-////    	return (new Gson()).toJson(r);
-//	    
-//	}
-	
+	}	
 }

@@ -45,7 +45,7 @@ public class RestResponseEntityExceptionHandler extends DefaultHandlerExceptionR
 	@Override
 	protected ModelAndView handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {	
 		
-		LOGGER.info("Error 2: " + ex.getMessage() + " - " + ex.getClass().getName() + ": " + request.getContentType());
+		LOGGER.info("Error 3: " + ex.getMessage() + " - " + ex.getClass().getName() + ": " + request.getContentType());
 		
 		Response r = new Response("Error 3: " + ex.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 		
@@ -71,7 +71,7 @@ public class RestResponseEntityExceptionHandler extends DefaultHandlerExceptionR
 		PrintWriter out = response.getWriter();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setStatus(r.getCode());
         out.print((new Gson()).toJson(r));
         out.flush();
 	}
