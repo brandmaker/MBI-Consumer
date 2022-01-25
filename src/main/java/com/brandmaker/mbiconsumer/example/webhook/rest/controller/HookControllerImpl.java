@@ -111,7 +111,7 @@ public class HookControllerImpl implements HookController {
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		while ( headerNames != null && headerNames.hasMoreElements() ) {
 			String name = headerNames.nextElement();
-			LOGGER.info( name + " = " + httpRequest.getHeader(name));
+			LOGGER.debug( name + " = " + httpRequest.getHeader(name));
 		}
 			
 		
@@ -317,7 +317,7 @@ public class HookControllerImpl implements HookController {
 		String cert = getCertFromBMUrl(hostUrl);
 		
 		byte[] byteKey = Base64.getDecoder().decode(cert.getBytes());
-		LOGGER.info("Length: " + byteKey.length);
+		LOGGER.debug("Length: " + byteKey.length);
         X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
 
@@ -335,7 +335,7 @@ public class HookControllerImpl implements HookController {
 		encoding = encoding == null ? "UTF-8" : encoding;
 		
 		cert = IOUtils.toString(in, encoding);
-		LOGGER.info("Cert " + cert);
+		LOGGER.debug("Cert " + cert);
 		
 		return cert;
 	}
