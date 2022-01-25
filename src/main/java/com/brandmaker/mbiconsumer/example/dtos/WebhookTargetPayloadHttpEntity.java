@@ -25,8 +25,8 @@ public class WebhookTargetPayloadHttpEntity {
 	public final static String  PROP_CUSTOMERID = "customerId";
 	public final static String  PROP_SYSTEMID = "systemId";
 	public final static String  PROP_NAMESPACE = "namespace";
-	
-	  
+
+
     private String systemBaseUri;
     private String systemId;
     private String customerId;
@@ -34,7 +34,7 @@ public class WebhookTargetPayloadHttpEntity {
     private List<Event> events;
 
     public WebhookTargetPayloadHttpEntity(Map<String, Object> message) {
-		// FIXME Auto-generated constructor stub
+		// nothing special in here
 	}
 
 	public WebhookTargetPayloadHttpEntity() {
@@ -221,19 +221,19 @@ public class WebhookTargetPayloadHttpEntity {
 
 		public JSONObject toJson() {
 			Gson gson = new Gson();
-			
+
 			String t = gson.toJson(this);
-			
+
 			return new JSONObject(t);
 		}
     }
 
 	public JSONObject toJson() {
 		Gson gson = new Gson();
-		
+
 		String t = gson.toJson(this);
-		
+
 		return new JSONObject(t);
-		
+
 	}
 }

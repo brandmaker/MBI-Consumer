@@ -26,47 +26,47 @@ import com.google.gson.Gson;
 public class RestResponseEntityExceptionHandler extends DefaultHandlerExceptionResolver {
 
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
-	
-	
+
+
 	@ExceptionHandler(value= HttpMessageNotReadableException.class)
     @Override
     protected ModelAndView handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {
-        
+
 		LOGGER.info("Error 1: " + ex.getMessage() + " - " + ex.getClass().getName() );
-		
+
 		Response r = new Response("Error 1: " + ex.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
-		
-		sendJsonErrorMessage(response, r);   
-        
+
+		sendJsonErrorMessage(response, r);
+
         return new ModelAndView();
     }
-	
+
 	@ExceptionHandler(value= MissingServletRequestParameterException.class)
 	@Override
-	protected ModelAndView handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {	
-		
+	protected ModelAndView handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {
+
 		LOGGER.info("Error 3: " + ex.getMessage() + " - " + ex.getClass().getName() + ": " + request.getContentType());
-		
+
 		Response r = new Response("Error 3: " + ex.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
-		
-		sendJsonErrorMessage(response, r);   
+
+		sendJsonErrorMessage(response, r);
         return new ModelAndView();
-        
+
 	}
-	
+
 	@ExceptionHandler(value= HttpMediaTypeNotAcceptableException.class)
 	@Override
 	protected ModelAndView handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) throws IOException {
-		
+
 		LOGGER.info("Error 2: " + ex.getMessage() + " - " + ex.getClass().getName() + ": " + request.getContentType());
-		
+
 		Response r = new Response("Error 2: " + ex.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
-		
-		sendJsonErrorMessage(response, r);   
+
+		sendJsonErrorMessage(response, r);
         return new ModelAndView();
-        
+
 	}
-	
+
 	private void sendJsonErrorMessage(HttpServletResponse response, Response r) throws IOException {
 		PrintWriter out = response.getWriter();
         response.setContentType("application/json");

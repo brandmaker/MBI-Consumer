@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * <p>This is the JSON-to-POJO Class for the general request which is send to the
  * WebHook
- * 
+ *
  * <p>The request has the following format:
  * <pre>
  * {
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 		"signature": "signature of data element"
  * }
  * </pre>
- * 
+ *
  * @author axel.amthor
  *
  */
@@ -54,7 +54,7 @@ public class HookRequestBody {
 
 			String jsonStr = Obj.writeValueAsString(this);
 			JSONObject jo = new JSONObject(jsonStr);
-			
+
 			return jo.toString();
 		}
 
@@ -63,7 +63,7 @@ public class HookRequestBody {
 		}
 		return null;
 	}
-	
+
 	public String toString(int ind) {
 		ObjectMapper Obj = new ObjectMapper();
 
@@ -71,7 +71,7 @@ public class HookRequestBody {
 
 			String jsonStr = Obj.writeValueAsString(this);
 			JSONObject jo = new JSONObject(jsonStr);
-			
+
 			return jo.toString(ind);
 		}
 

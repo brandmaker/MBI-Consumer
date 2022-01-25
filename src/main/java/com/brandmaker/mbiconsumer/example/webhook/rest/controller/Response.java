@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 /**
  * <p>Response PoJo to automatically generate a JSON response through spring converter
- * 
+ *
  * @author axel.amthor
  *
  */
@@ -16,10 +16,10 @@ public class Response {
 
 	private String message;
 	private int code;
-	
-	@JsonInclude(JsonInclude.Include.NON_NULL) 
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private List<Event> events;
-	
+
 	public Response(String msg, int c) {
 		message = msg;
 		code = c;

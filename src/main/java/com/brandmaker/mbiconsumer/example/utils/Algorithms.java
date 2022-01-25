@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public enum Algorithms {
 
+	// special
+	HS2019("HmacSHA256", "hs2019", Mac.class),
+	
     // hmac
     HMAC_SHA1("HmacSHA1", "hmac-sha1", Mac.class),
     HMAC_SHA224("HmacSHA224", "hmac-sha224", Mac.class),

@@ -29,11 +29,11 @@ import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(servers = { @Server(url = "https://www.amthor.de/spring"),
 		@Server(url = "http://localhost:8080") },
-		info = @Info(title = "MBI WebHook Consumer Example", 
-						version = "0.0.1. Snapshot", 
-						description = "MBI WebHook Consumer Example Implementation", 
-						license = @License(name = "Apache 2.0", 
-							url = "https://github.com/brandmaker/MBI-Consumer"), 
+		info = @Info(title = "MBI WebHook Consumer Example",
+						version = "0.0.1. Snapshot",
+						description = "MBI WebHook Consumer Example Implementation",
+						license = @License(name = "Apache 2.0",
+							url = "https://github.com/brandmaker/MBI-Consumer"),
 						contact = @Contact(url = "https://www.brandmaker.com", name = "A. Amthor", email = "axel.amthor@brandmaker.com")
 				)
 )
@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 
 // our controller is in a sibling package, give Spring some hints where to find it
-@ComponentScan(basePackageClasses = HookController.class, basePackages = { 
+@ComponentScan(basePackageClasses = HookController.class, basePackages = {
 		"com.brandmaker.mbiconsumer.example.queue",
 		"com.brandmaker.mbiconsumer.example.webhook",
 		"com.brandmaker.mbiconsumer.example.rest",
@@ -53,9 +53,9 @@ import io.swagger.v3.oas.annotations.servers.Server;
  * Spring Boot Application starter
  * <p>
  * Security auto config is <b>not loaded</b here
- * 
+ *
  * @see com.brandmaker.mbiconsumer.example.webhook.consumer.SecurityConfiguration
- * 
+ *
  * @author axel.amthor
  *
  */
@@ -70,7 +70,7 @@ public class Application extends SpringBootServletInitializer {
 	public static void main(String[] args) {
 
 		SpringApplication application = new SpringApplication(Application.class);
-		
+
         application.run(args);
 
 	}
@@ -82,17 +82,17 @@ public class Application extends SpringBootServletInitializer {
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 		return builder.sources(Application.class);
 	}
-	
+
 	/**
 	 * This bean will handle X-Forwarded headers if running behind a reverse proxy
 	 * and map internal requests back to the external reverse proxy endpoint properly
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
 	ForwardedHeaderFilter forwardedHeaderFilter() {
 	   return new ForwardedHeaderFilter();
 	}
-	
-	
+
+
 }

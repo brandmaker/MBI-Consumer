@@ -1,7 +1,7 @@
 package com.brandmaker.mbiconsumer.example.webhook;
 
 public class WebhookException extends Exception {
-	
+
 	/**
 	 *
 	 */

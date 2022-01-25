@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.brandmaker.mbiconsumer.example.utils;
 
@@ -20,18 +20,18 @@ import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity.Ev
 
 /**
  * @see FileManagerService
- * 
+ *
  * @author axel.amthor
  *
  */
 public class FileManagerServiceImpl implements FileManagerService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileManagerService.class);
-	
+
 	/** directory where to store the local copies of the assets */
 	@Value("${spring.application.system.basepath}")
 	private String basepath;
-	
+
 	/* (non-Javadoc)
 	 * @see com.brandmaker.mediapool.rest.FileManagerService#storeMetadata(com.brandmaker.mediapool.MediaPoolAsset)
 	 */
@@ -39,19 +39,19 @@ public class FileManagerServiceImpl implements FileManagerService {
 	public void storeMetadata(QueueEvent event, JSONObject object) {
 		File path = getOrCreateTargetFolder(event);
 		FileOutputStream outputStream =  null;
-		
+
 		File metadata = new File(path, "Event_" + System.currentTimeMillis() + ".json");
 		try {
 			outputStream = new FileOutputStream(metadata);
 		    byte[] bytes = object.toString(4).getBytes();
-		    
+
 		    outputStream.write(bytes);
 		}
 		catch ( Exception e ) {
 			LOGGER.error("Error on writing meta data", e);
 		}
 		finally {
-			
+
 			try {
 				if ( outputStream != null )
 					outputStream.close();
@@ -59,7 +59,7 @@ public class FileManagerServiceImpl implements FileManagerService {
 			catch ( Exception e ) {
 				LOGGER.error("Error on closing streams", e);
 			}
-			
+
 		}
 	}
 
@@ -70,26 +70,26 @@ public class FileManagerServiceImpl implements FileManagerService {
 	public void storeBinarydata(QueueEvent event, byte[] object) {
 		File path = getOrCreateTargetFolder(event);
 		FileOutputStream outputStream = null;
-		
+
 		try {
-			
+
 			// use the actual name and suffix and create the output file
 			File binary = new File(path, "Event_" + System.currentTimeMillis() + ".bin");
-			
+
 			// open out stream
 			outputStream = new FileOutputStream(binary);
-			
+
 			// copy streams
 		    IOUtils.write(object, outputStream);
-		    
+
 		    LOGGER.info("Written to file " + binary.getAbsolutePath() );
-		    
+
 		}
 		catch ( Exception e ) {
 			LOGGER.error("Error on writing binary data", e);
 		}
 		finally {
-			
+
 			try {
 				if ( outputStream != null )
 					outputStream.close();
@@ -97,9 +97,9 @@ public class FileManagerServiceImpl implements FileManagerService {
 			catch ( Exception e ) {
 				LOGGER.error("Error on closing streams", e);
 			}
-			
+
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -110,26 +110,26 @@ public class FileManagerServiceImpl implements FileManagerService {
 		File path = getOrCreateTargetFolder(event);
 
 		try {
-			
+
 			FileUtils.deleteDirectory(path);
-		} 
+		}
 		catch (IOException e) {
 			LOGGER.error("Error on removing files", e);
 		}
-		
+
 	}
-	
-	
+
+
 	private File getOrCreateTargetFolder(QueueEvent event) {
-		
-		String path = basepath 
-				+ event.getCustomerId() + "/" 
-				+ event.getSystemId() + "/";	
-		
+
+		String path = basepath
+				+ event.getCustomerId() + "/"
+				+ event.getSystemId() + "/";
+
 		File dir = new File(path);
-		
+
 		dir.mkdirs();
-		
+
 		return dir;
 	}
 

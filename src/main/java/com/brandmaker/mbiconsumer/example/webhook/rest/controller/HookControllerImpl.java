@@ -77,90 +77,89 @@ public class HookControllerImpl implements HookController {
 
 	/** our logger is log4j */
 	private static final Logger LOGGER = LoggerFactory.getLogger(HookController.class);
-	
+
 	/** pick value from application.yaml */
 	@Value("${spring.application.system.publickey}")
 	private String pubkey;
-	
+
 	@Value("${spring.application.system.customerId}")
 	private String customerId;
-	
+
 	@Value("${spring.application.system.systemId}")
 	private String systemId;
-	
+
 	@Autowired
 	private Sender processingQueueSender;
-	
-	private String[] copyProps = { WebhookTargetPayloadHttpEntity.PROP_CUSTOMERID, 
-			WebhookTargetPayloadHttpEntity.PROP_NAMESPACE, 
-			WebhookTargetPayloadHttpEntity.PROP_SYSTEMBASEURI, 
+
+	private String[] copyProps = { WebhookTargetPayloadHttpEntity.PROP_CUSTOMERID,
+			WebhookTargetPayloadHttpEntity.PROP_NAMESPACE,
+			WebhookTargetPayloadHttpEntity.PROP_SYSTEMBASEURI,
 			WebhookTargetPayloadHttpEntity.PROP_SYSTEMID };
-	
+
 	@Bean
     public HandlerExceptionResolver customHandlerExceptionResolver() {
         return new RestResponseEntityExceptionHandler();
     }
-	 
+
 	/* (non-Javadoc)
 	 * @see com.brandmaker.mediapool.webhook.rest.controller.HookController#post(com.brandmaker.mediapool.webhook.rest.controller.HookRequestBody, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	public Response post( WebhookTargetPayloadHttpEntity webhookEventRequest, Boolean eventsInResponse, HttpServletResponse httpResponse, HttpServletRequest httpRequest) throws HookControllerException {
-		
+
 		long start = System.currentTimeMillis();
-		
+
 		// spit out all headers, let's see whether we have a Authentication Header with an HTTP signature
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		while ( headerNames != null && headerNames.hasMoreElements() ) {
 			String name = headerNames.nextElement();
 			LOGGER.debug( name + " = " + httpRequest.getHeader(name));
 		}
-			
-		
+
 		try {
-			
+
 			/** received event */
 			JSONObject requestObject = webhookEventRequest.toJson();
 			LOGGER.debug(requestObject.toString(4));
-			
+
 			/*
 			 * Validate the data with the signature and the configured pub key
 			 */
 			boolean signatureValid = false;
 			String authHeader = httpRequest.getHeader("Authorization");
-			
+
 			if ( authHeader != null && !authHeader.isBlank() )
 				signatureValid = validateSignature(webhookEventRequest, httpRequest, authHeader);
-			        
+
 			if ( !signatureValid )
 				return createResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "unauthorized");
 
-			
+
 			/*
 			 * pick the list of events and push them one by one to the processing queue
 			 */
 			List<Event> events = webhookEventRequest.getEvents();
 			int n = 1;
-			List<Event> processedEvents = new ArrayList<>();;
-			
+			List<Event> processedEvents = new ArrayList<>();
+
 			/*
 			 * process event array
 			 */
 			if ( events != null ) {
 				for ( Event event : events )
 				{
-					
+
 					/*
 					 * TODO check if the event is targeted to this consumer ... ?
 					 */
-					
-					
+
+
 					/** data structure that will be put into the queue */
 					JSONObject eventObject = event.toJson();
-					
-					
+
+
 					/*
-					 * these props need to go into each event element, as within the subsequent queue, 
+					 * these props need to go into each event element, as within the subsequent queue,
 					 * there is no "batch" but single, disjoint events
 					 */
 					try {
@@ -172,52 +171,52 @@ public class HookControllerImpl implements HookController {
 					catch ( JSONException j ) {
 						throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "(4) cannot amend event object", j);
 					}
-					
+
 					/*
 					 * The JSON structure now should match the QueueEvent object structure
 					 */
-					
+
 					/*
 					 * Push event to the processing queue
 					 * We will not process this event within this loop!
-					 * 
+					 *
 					 * We are using spring JMS together with ActiveMQ as a broker. Configuration can be done via the application.yaml
-					 * 
+					 *
 					 */
 					processingQueueSender.send(eventObject.toString());
-					
+
 					processedEvents.add(event);
-					
+
 					LOGGER.debug( (n++) + ". Event queued" + eventObject.toString(4) );
-					
+
 				}
 			}
-			
+
 			/*
 			 * now we are done here and will send back the response to the requester
-			 * 
+			 *
 			 * MBI is not interested on HOW we are processing the event itself nor whether this
 			 * processing might fail. It wants us to tell whether we have successfully RECEIVED the event.
-			 * 
+			 *
 			 * So the response over here is always "202 accepted" as we process the event later and asynchronously.
-			 * 
-			 * If too many consecutive errors are returned, the webhook will be disabled 
+			 *
+			 * If too many consecutive errors are returned, the webhook will be disabled
 			 * and no further events will be received any more!
-			 * 
-			 * 
+			 *
+			 *
 			 */
 			Response r = createResponse(httpResponse, HttpServletResponse.SC_ACCEPTED, "accepted");
-			
+
 			if ( eventsInResponse )
 				r.setEvents(processedEvents);
-			
+
 			return r;
-	        
-			
-		} 
+
+
+		}
 		catch ( Exception e ) {
 			LOGGER.error("Error:", e);
-			throw new HookControllerException(e.getMessage()); 
+			throw new HookControllerException(e.getMessage());
 		}
 		finally
 		{
@@ -228,43 +227,43 @@ public class HookControllerImpl implements HookController {
 
 	private boolean validateSignature(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletRequest httpRequest, String authHeader)
 										throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, UnsupportedAlgorithmException {
-		
+
 		boolean signatureValid = false;
-		
+
 		// get the header value w/o the scheme
 		String rawHeader = authHeader.replaceFirst("[sS]ignature ", ""); // mind the blank at the end!
-		
+
 		// split the raw header value in a key-value map and eliminate the quotes
 		Map<String, String> headerKeyMap = Arrays.asList(rawHeader.split(",")).stream().map(x -> x.split("=", 2)).collect(Collectors.toMap(x -> x[0].toLowerCase(), x -> x[1].trim().replaceAll("^'|'$", "")));
-		
+
 		for (Map.Entry<String, String> entry : headerKeyMap.entrySet()) {
 		    LOGGER.debug(String.format("Header Key: %s = %s", entry.getKey(), entry.getValue()));
 		}
-		
+
 		// these are the headers, from which the data is picked to be signed
 		String[] validationHeaders = headerKeyMap.get("headers").split("[, ]");
-		
+
 		// get the signature data by retrieving the header values and concatenate to one string separated by a space/blank
 		String data = "";
 		for ( String validationHeader : validationHeaders ) {
 			String headerName = validationHeader.toLowerCase();
 			String headerValue = null;
 			if ( headerName.equals("host") ) {
-				
+
 				/*
-				 * if this service is running behind a reverse proxy, it may contain name/ip of the reverse proxy 
+				 * if this service is running behind a reverse proxy, it may contain name/ip of the reverse proxy
 				 * rather than the name of the requested server! So we need to look for this header first!
 				 */
-				headerValue = httpRequest.getHeader("x-forwarded-server"); 
-				
+				headerValue = httpRequest.getHeader("x-forwarded-server");
+
 				if ( headerValue == null || headerValue.isBlank() )
-					headerValue = httpRequest.getHeader(headerName); 
+					headerValue = httpRequest.getHeader(headerName);
 			}
 			else {
-				headerValue = httpRequest.getHeader(headerName); 
+				headerValue = httpRequest.getHeader(headerName);
 			}
 			LOGGER.debug(headerName + " = " + headerValue);
-				
+
 			if ( headerValue != null && !headerValue.isBlank() ) {
 				if ( data.length() > 0 )
 					data = data.concat(" ");
@@ -272,30 +271,30 @@ public class HookControllerImpl implements HookController {
 			}
 		}
 		LOGGER.debug("data to validate: " + data);
-		
+
 //		dumpAlgorithms();
-		
+
 		// get the effective base64 decoded signature
 		byte[] sigDecoded = Base64.getDecoder().decode(headerKeyMap.get("signature").getBytes());
-		
+
 		/*
 		 * the value in the signature cannot be used as algorithm directly, it just indicates an algorithm,
 		 * we need to use a map to get the JVM algorithm specifier
 		 */
 		String algo = Algorithms.toJvmName( headerKeyMap.get("algorithm") );
-		
+
 		// get the public key. Please refer to the manual regarding this!
-		PublicKey publicKey = getPublicKey(webhookEventRequest.getSystemBaseUri()); 
-			
+		PublicKey publicKey = getPublicKey(webhookEventRequest.getSystemBaseUri());
+
 		try {
-			
+
 			Signature sig = Signature.getInstance(algo);
 		    sig.initVerify(publicKey);
 		    sig.update(data.getBytes());
-		    
+
 			boolean result = sig.verify(sigDecoded);
 			LOGGER.info("Signature verification of '" + data + "' with " + algo + ": " + (result?"passed":"failed") );
-			
+
 			signatureValid = true;
 		}
 		catch (Exception e) {
@@ -305,41 +304,41 @@ public class HookControllerImpl implements HookController {
 	}
 
 	/**
-	 * This method should encapsulate the public key for the sending instance. For testing purposes, 
+	 * This method should encapsulate the public key for the sending instance. For testing purposes,
 	 * this is grabbed from the sender dynamically <b>which is highly discouraged for production!</b>
 	 * Instead, put the x509 string in here statically!
-	 * 
+	 *
 	 * @return public key
 	 * @throws CertificateException
-	 * @throws IOException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws InvalidKeySpecException 
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	private PublicKey getPublicKey(String hostUrl) throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		
+
 		/*
-		 * FIXME: the cert should not be taken from the given URL dynamically, 
+		 * FIXME: the cert should not be taken from the given URL dynamically,
 		 *        instead it should be picked up once, stored locally and then retrieved from there (JVM key store?)!!!
 		 *        This is just for test purposes and should not be used in a production environment!!!
 		 */
 		String cert = getCertFromBMUrl(hostUrl);
-		
+
 		byte[] byteKey = Base64.getDecoder().decode(cert.getBytes());
 		LOGGER.debug("Length: " + byteKey.length);
         X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
 
         return kf.generatePublic(X509publicKey);
-		
+
 	}
 
 	/**
 	 * <pre>
-	 * FIXME: the cert should not be taken from the given URL dynamically, 
+	 * FIXME: the cert should not be taken from the given URL dynamically,
 	 *        instead it should be picked up once, stored locally and then retrieved from there (JVM key store?)!!!
 	 *        This is just for test purposes and should not be used in a production environment!!!
 	 * </pre>
-	 * 
+	 *
 	 * @param hostUrl - base url of the BM system
 	 * @return PEM formatted certificate string
 	 * @throws MalformedURLException
@@ -354,10 +353,10 @@ public class HookControllerImpl implements HookController {
 		InputStream in = con.getInputStream();
 		String encoding = con.getContentEncoding();
 		encoding = encoding == null ? "UTF-8" : encoding;
-		
+
 		cert = IOUtils.toString(in, encoding);
 		LOGGER.debug("Cert " + cert);
-		
+
 		return cert;
 	}
 
@@ -368,7 +367,7 @@ public class HookControllerImpl implements HookController {
 		Response r = new Response(message, code);
 		return r;
 	}
-	
+
 	private void dumpAlgorithms() {
 		ArrayList<String> algorithms = new ArrayList<>();
 		for (Provider provider : Security.getProviders())
@@ -378,5 +377,5 @@ public class HookControllerImpl implements HookController {
 		    }
 		LOGGER.debug(algorithms.toString());
 	}
-	
+
 }

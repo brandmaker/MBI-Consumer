@@ -9,7 +9,7 @@ import com.brandmaker.mbiconsumer.example.utils.FileManagerService;
 
 /**
  * @author axel.amthor
- * 
+ *
  */
 @Component
 public class EventProcessor {
@@ -22,7 +22,7 @@ public class EventProcessor {
 
 		private State state;
 		private String message;
-		
+
 		public ProcessingResult(State state, String string) {
 			this.setState(state, message);
 		}
@@ -32,17 +32,17 @@ public class EventProcessor {
 			this.message = message;
 		}
 	}
-	
+
 	@Autowired
 	FileManagerService fileManagerService;
-	
+
 	@Bean
 	public ProcessingResult process(QueueEvent queueEvent) {
-		
+
 		fileManagerService.storeMetadata(queueEvent, queueEvent.toJson());
-		
+
 		return new ProcessingResult(ProcessingResult.State.SUCCESS, "event processed");
-				
+
 	}
 
 }
