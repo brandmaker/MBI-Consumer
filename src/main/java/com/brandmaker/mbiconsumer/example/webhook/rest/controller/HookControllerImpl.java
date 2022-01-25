@@ -52,6 +52,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity;
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity.Event;
 import com.brandmaker.mbiconsumer.example.queue.Sender;
+import com.brandmaker.mbiconsumer.example.utils.Algorithms;
+import com.brandmaker.mbiconsumer.example.utils.UnsupportedAlgorithmException;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -225,7 +227,7 @@ public class HookControllerImpl implements HookController {
 	}
 
 	private boolean validateSignature(WebhookTargetPayloadHttpEntity webhookEventRequest, HttpServletRequest httpRequest, String authHeader)
-																												throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+										throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, UnsupportedAlgorithmException {
 		
 		boolean signatureValid = false;
 		
@@ -245,41 +247,42 @@ public class HookControllerImpl implements HookController {
 		// get the signature data by retrieving the header values and concatenate to one string separated by a space/blank
 		String data = "";
 		for ( String validationHeader : validationHeaders ) {
-			String h = validationHeader.toLowerCase();
-			String s = null;
-			if ( h.equals("host") ) {
+			String headerName = validationHeader.toLowerCase();
+			String headerValue = null;
+			if ( headerName.equals("host") ) {
 				
 				/*
 				 * if this service is running behind a reverse proxy, it may contain name/ip of the reverse proxy 
 				 * rather than the name of the requested server! So we need to look for this header first!
 				 */
-				s = httpRequest.getHeader("x-forwarded-server"); 
+				headerValue = httpRequest.getHeader("x-forwarded-server"); 
 				
-				if ( s == null || s.isBlank() )
-					s = httpRequest.getHeader(h); 
+				if ( headerValue == null || headerValue.isBlank() )
+					headerValue = httpRequest.getHeader(headerName); 
 			}
 			else {
-				s = httpRequest.getHeader(h); 
+				headerValue = httpRequest.getHeader(headerName); 
 			}
-			LOGGER.debug(validationHeader + " = " + s);
+			LOGGER.debug(headerName + " = " + headerValue);
 				
-			if ( s != null && !s.isBlank() ) {
+			if ( headerValue != null && !headerValue.isBlank() ) {
 				if ( data.length() > 0 )
 					data = data.concat(" ");
-				data = data.concat(s);
+				data = data.concat(headerValue);
 			}
 		}
 		LOGGER.debug("data to validate: " + data);
 		
+//		dumpAlgorithms();
+		
 		// get the effective base64 decoded signature
 		byte[] sigDecoded = Base64.getDecoder().decode(headerKeyMap.get("signature").getBytes());
-		String algo = headerKeyMap.get("algorithm");
 		
 		/*
-		 * the value in the signature cannot be used as algorithm directly, it just indicates an algorithm
+		 * the value in the signature cannot be used as algorithm directly, it just indicates an algorithm,
+		 * we need to use a map to get the JVM algorithm specifier
 		 */
-		if ( algo.equals("rsa-sha256") )
-			algo = "SHA256withRSA";
+		String algo = Algorithms.toJvmName( headerKeyMap.get("algorithm") );
 		
 		// get the public key. Please refer to the manual regarding this!
 		PublicKey publicKey = getPublicKey(webhookEventRequest.getSystemBaseUri()); 
@@ -314,6 +317,11 @@ public class HookControllerImpl implements HookController {
 	 */
 	private PublicKey getPublicKey(String hostUrl) throws CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		
+		/*
+		 * FIXME: the cert should not be taken from the given URL dynamically, 
+		 *        instead it should be picked up once, stored locally and then retrieved from there (JVM key store?)!!!
+		 *        This is just for test purposes and should not be used in a production environment!!!
+		 */
 		String cert = getCertFromBMUrl(hostUrl);
 		
 		byte[] byteKey = Base64.getDecoder().decode(cert.getBytes());
@@ -325,6 +333,19 @@ public class HookControllerImpl implements HookController {
 		
 	}
 
+	/**
+	 * <pre>
+	 * FIXME: the cert should not be taken from the given URL dynamically, 
+	 *        instead it should be picked up once, stored locally and then retrieved from there (JVM key store?)!!!
+	 *        This is just for test purposes and should not be used in a production environment!!!
+	 * </pre>
+	 * 
+	 * @param hostUrl - base url of the BM system
+	 * @return PEM formatted certificate string
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	@Deprecated
 	private String getCertFromBMUrl(String hostUrl) throws MalformedURLException, IOException {
 		String cert;
 		URL url = new URL(hostUrl.replaceAll("/$", "") + "/rest/sso/keys/public");
@@ -355,7 +376,7 @@ public class HookControllerImpl implements HookController {
 		        if (service.getType().equals("Signature"))
 		            algorithms.add(service.getAlgorithm());
 		    }
-		LOGGER.info(algorithms.toString());
+		LOGGER.debug(algorithms.toString());
 	}
 	
 }
