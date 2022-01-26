@@ -1,4 +1,4 @@
-package com.brandmaker.mbiconsumer.example.utils;
+package com.brandmaker.mbiconsumer.example.exceptions;
 
 public class UnsupportedAlgorithmException extends Exception {
 

@@ -1,4 +1,4 @@
-package com.brandmaker.mbiconsumer.example.webhook;
+package com.brandmaker.mbiconsumer.example.exceptions;
 
 public class WebhookException extends Exception {
 

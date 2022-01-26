@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.brandmaker.mbiconsumer.example.webhook.rest.controller.Response;
+import com.brandmaker.mbiconsumer.example.dtos.Response;
 import com.google.gson.Gson;
 
 /**

@@ -1,6 +1,9 @@
 package com.brandmaker.mbiconsumer.example.utils;
 
 import javax.crypto.Mac;
+
+import com.brandmaker.mbiconsumer.example.exceptions.UnsupportedAlgorithmException;
+
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
+package com.brandmaker.mbiconsumer.example.exceptions;
 
 import org.slf4j.LoggerFactory;
 

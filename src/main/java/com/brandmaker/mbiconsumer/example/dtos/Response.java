@@ -1,11 +1,11 @@
-package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
+package com.brandmaker.mbiconsumer.example.dtos;
 
 import java.util.List;
 
 
 import com.brandmaker.mbiconsumer.example.dtos.WebhookTargetPayloadHttpEntity.Event;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * <p>Response PoJo to automatically generate a JSON response through spring converter
  *
@@ -41,11 +41,11 @@ public class Response {
 		this.code = code;
 	}
 
-	public List getEvents() {
+	public List<Event> getEvents() {
 		return events;
 	}
 
-	public void setEvents(List events) {
+	public void setEvents(List<Event> events) {
 		this.events = events;
 	}
 }

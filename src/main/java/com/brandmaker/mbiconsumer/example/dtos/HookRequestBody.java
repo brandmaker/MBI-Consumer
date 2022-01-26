@@ -1,4 +1,4 @@
-package com.brandmaker.mbiconsumer.example.webhook.rest.controller;
+package com.brandmaker.mbiconsumer.example.dtos;
 
 import java.io.IOException;
 
