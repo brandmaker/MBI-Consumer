@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Comparator;
